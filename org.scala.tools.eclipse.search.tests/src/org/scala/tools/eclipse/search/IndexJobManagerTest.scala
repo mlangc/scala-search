@@ -227,10 +227,11 @@ class IndexJobManagerTest {
     deletedLatch.await(EVENT_DELAY, java.util.concurrent.TimeUnit.SECONDS)
 
     // wait until the index has been removed
-    SDTTestUtils.waitUntil(10000)(!indexer.index.location(p.underlying).toFile.exists)
+    val indexFile = indexer.index.location(p.underlying).toFile
+    SDTTestUtils.waitUntil(10000)(!indexFile.exists)
 
     // expected
-    assertFalse(indexer.index.location(p.underlying).toFile.exists)
+    assertFalse(indexFile.getCanonicalPath, indexFile.exists)
     observer.stop
   }
 }
