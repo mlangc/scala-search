@@ -84,9 +84,13 @@ trait Index extends HasLogger {
     def deleteRec(f: File): Boolean = {
       if (f.isDirectory()) {
         val children = f.listFiles
-        children.foreach(deleteRec)
+        children.foldLeft(true)((acc, elem) => deleteRec(elem) && acc)
+      } else if (!f.delete()) {
+        logger.warn("Unable to delete '" + f.getCanonicalPath + "'")
+        false
+      } else {
+        true
       }
-      f.delete
     }
 
     Try(deleteRec(location(project).toFile)).recover {
