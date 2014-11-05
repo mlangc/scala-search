@@ -80,16 +80,20 @@ trait Index extends HasLogger {
   }
 
   def deleteIndex(project: IProject): Try[Boolean] = {
-
     def deleteRec(f: File): Boolean = {
+      def verboseDelete(f: File): Boolean = {
+        val deleted = f.delete()
+        if (!deleted)
+          logger.warn("Unable to delete '" + f.getCanonicalPath + "'")
+        deleted
+      }
+
       if (f.isDirectory()) {
         val children = f.listFiles
-        children.foldLeft(true)((acc, elem) => deleteRec(elem) && acc)
-      } else if (!f.delete()) {
-        logger.warn("Unable to delete '" + f.getCanonicalPath + "'")
-        false
+        val childrenDeleted = children.foldLeft(true)((acc, elem) => deleteRec(elem) && acc)
+        verboseDelete(f) && childrenDeleted
       } else {
-        true
+        verboseDelete(f)
       }
     }
 
