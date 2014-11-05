@@ -39,6 +39,7 @@ import scala.util.Success
 import scala.util.Failure
 import scala.collection.mutable.ArraySeq
 import org.scala.tools.eclipse.search.searching.Scope
+import java.nio.file.Files
 
 trait SearchFailure
 case class BrokenIndex(project: IScalaProject) extends SearchFailure
@@ -82,10 +83,14 @@ trait Index extends HasLogger {
   def deleteIndex(project: IProject): Try[Boolean] = {
     def deleteRec(f: File): Boolean = {
       def verboseDelete(f: File): Boolean = {
-        val deleted = f.delete()
-        if (!deleted)
-          logger.debug("Unable to delete '" + f.getCanonicalPath + "'")
-        deleted
+        try {
+          Files.delete(f.toPath())
+          true
+        } catch {
+          case e: Exception =>
+            logger.debug("Error deleting '" + f.getCanonicalPath + "'", e)
+            false
+        }
       }
 
       if (f.isDirectory()) {
