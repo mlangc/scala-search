@@ -218,16 +218,16 @@ class IndexJobManagerTest {
     // has been indexed. Instead until the index has been created on disc, as
     // we know that will happen once it has indexed the file. We wait no longer
     // than 10 seconds.
-    SDTTestUtils.waitUntil(10000)(indexer.index.location(p.underlying).toFile.exists)
+    val indexFile = indexer.index.location(p.underlying).toFile
+    SDTTestUtils.waitUntil(10000)(indexFile.exists)
 
-    assertTrue(indexer.index.location(p.underlying).toFile.exists)
+    assertTrue(indexFile.exists)
 
     // event
     p.underlying.delete(true, monitor)
     deletedLatch.await(EVENT_DELAY, java.util.concurrent.TimeUnit.SECONDS)
 
     // wait until the index has been removed
-    val indexFile = indexer.index.location(p.underlying).toFile
     SDTTestUtils.waitUntil(10000)(!indexFile.exists)
 
     // expected

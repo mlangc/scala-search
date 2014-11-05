@@ -84,7 +84,7 @@ trait Index extends HasLogger {
       def verboseDelete(f: File): Boolean = {
         val deleted = f.delete()
         if (!deleted)
-          logger.warn("Unable to delete '" + f.getCanonicalPath + "'")
+          logger.debug("Unable to delete '" + f.getCanonicalPath + "'")
         deleted
       }
 
