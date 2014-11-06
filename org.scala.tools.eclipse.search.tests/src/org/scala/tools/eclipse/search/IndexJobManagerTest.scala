@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Path
 import java.util.concurrent.CountDownLatch
 import org.eclipse.core.resources.IProject
 import org.scalaide.core.IScalaPlugin
+import java.time.LocalTime
 
 class IndexJobManagerTest {
 
@@ -184,6 +185,8 @@ class IndexJobManagerTest {
 
   @Test
   def deletesIndexWhenProjectIsDeleted() {
+    println(LocalTime.now() + " - deletesIndexWhenProjectIsDeleted: start")
+
     val name = "IndexJobManagerTest-ToBeDeletedIndex"
     val fileName = "Test.scala"
     val createdLatch = new CountDownLatch(1)
@@ -231,6 +234,7 @@ class IndexJobManagerTest {
     SDTTestUtils.waitUntil(10000)(!indexFile.exists)
 
     // expected
+    println(LocalTime.now() + " - deletesIndexWhenProjectIsDeleted: before assertion")
     assertFalse(indexFile.getCanonicalPath, indexFile.exists)
     observer.stop
   }
