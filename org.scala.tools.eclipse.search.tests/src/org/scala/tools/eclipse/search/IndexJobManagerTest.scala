@@ -1,19 +1,25 @@
 package org.scala.tools.eclipse.search
 
-import org.scalaide.core.testsetup.TestProjectSetup
-import org.scalaide.core.testsetup.SDTTestUtils
-import org.junit.{ Test, Before, After }
-import org.junit.Assert._
-import org.eclipse.core.runtime.NullProgressMonitor
-import java.io.File
-import org.scala.tools.eclipse.search.indexing.Index
-import org.scala.tools.eclipse.search.indexing.SourceIndexer
-import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.Path
+import java.util.Date
 import java.util.concurrent.CountDownLatch
 import org.eclipse.core.resources.IProject
-import org.scalaide.core.IScalaPlugin
-import java.time.LocalTime
+import org.eclipse.core.runtime.NullProgressMonitor
+import org.eclipse.core.runtime.Path
+import org.junit.After
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import org.scala.tools.eclipse.search.indexing.Index
+import org.scala.tools.eclipse.search.indexing.SourceIndexer
+import org.scalaide.core.testsetup.SDTTestUtils
+import org.scalaide.core.testsetup.SDTTestUtils.createProjects
+import org.scalaide.core.testsetup.TestProjectSetup
+import IndexJobManagerTest.EVENT_DELAY
+import IndexJobManagerTest.addSourceFile
+import IndexJobManagerTest.mkPath
+import IndexJobManagerTest.project
+import java.text.SimpleDateFormat
 
 class IndexJobManagerTest {
 
@@ -185,7 +191,8 @@ class IndexJobManagerTest {
 
   @Test
   def deletesIndexWhenProjectIsDeleted() {
-    println(LocalTime.now() + " - deletesIndexWhenProjectIsDeleted: start")
+    val df = new SimpleDateFormat("HH:mm:ss,SSS")
+    println(df.format(new Date()) + " - deletesIndexWhenProjectIsDeleted: start")
 
     val name = "IndexJobManagerTest-ToBeDeletedIndex"
     val fileName = "Test.scala"
@@ -234,7 +241,7 @@ class IndexJobManagerTest {
     SDTTestUtils.waitUntil(10000)(!indexFile.exists)
 
     // expected
-    println(LocalTime.now() + " - deletesIndexWhenProjectIsDeleted: before assertion")
+    println(df.format(new Date()) + " - deletesIndexWhenProjectIsDeleted: before assertion")
     assertFalse(indexFile.getCanonicalPath, indexFile.exists)
     observer.stop
   }
